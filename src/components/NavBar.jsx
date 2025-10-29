@@ -2,6 +2,9 @@ import logo from '/assets/images/logo-nameless.svg'
 import { NavLink } from 'react-router-dom'
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
+import ThemeSwitcher from './ui/ThemeSwitcher'
+import CurrencySwitcher from './ui/CurrencySwitcher'
+import Logo from './ui/Logo'
 
 const NavBar = () => {
     useGSAP(() => {
@@ -13,28 +16,15 @@ const NavBar = () => {
                 scrub: true
             }
         })
-        const linkTween = gsap.timeline({
-            scrollTrigger: {
-                trigger: document.body,
-                start: "+=700 top top",
-                end: "+=300",
-                scrub: true,
-            }
-        })
 
         navTween.fromTo('nav', {
-            backgroundImage: 'linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0))',
+            backgroundImage: 'linear-gradient(to bottom, rgba(var(--background), 0), rgba(var(--background), 0))',
             backdropFilter: 'blur(0px)'
         }, {
-            backgroundImage: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0))',
+            backgroundImage: 'linear-gradient(to bottom, rgba(var(--background), 0.8), rgba(var(--background), 0))',
             backdropFilter: 'blur(10px)',
             ease: 'power4.out'
         })
-
-        linkTween
-            .to('.nav-links a', {
-                color: '#aaa',
-            })
 
     }, [])
 
@@ -44,16 +34,36 @@ const NavBar = () => {
             <div className="nav-container ">
                 <div className="logo">
                     <NavLink to="/">
-                        <img className='logo-image' src={logo} alt="Logo" />
+                        <div>
+                            <Logo variant="nameless" className="h-15" hover={true} />
+                        </div>
                     </NavLink>
                 </div>
-                <div className="nav-buttons">
-                    <NavLink to="/login">
-                        <button className='nav-button login-button'>Log In</button>
+                <div className="flex items-center gap-6">
+                    <NavLink
+                        to="/"
+                        className="font-semibold text-sm transition-colors"
+                        style={{ color: `rgb(var(--foreground))` }}
+                    >
+                        Inicio
                     </NavLink>
-                    <NavLink to="/signup">
-                        <button className='nav-button signup-button'>Sign Up</button>
+                    <NavLink
+                        to="/tienda"
+                        className="font-semibold text-sm transition-colors"
+                        style={{ color: `rgb(var(--foreground))` }}
+                    >
+                        Tienda
                     </NavLink>
+                    <CurrencySwitcher />
+                    <ThemeSwitcher />
+                    <div className="nav-buttons">
+                        <NavLink to="/login">
+                            <button className='nav-button login-button'>Log In</button>
+                        </NavLink>
+                        <NavLink to="/signup">
+                            <button className='nav-button signup-button'>Sign Up</button>
+                        </NavLink>
+                    </div>
                 </div>
             </div>
         </nav>
