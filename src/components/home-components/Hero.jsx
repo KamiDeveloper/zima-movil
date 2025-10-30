@@ -8,7 +8,6 @@ const Hero = () => {
     const titleRef = useRef(null)
     const subtitleRef = useRef(null)
     const ctaRef = useRef(null)
-    const [isAnimationComplete, setIsAnimationComplete] = useState(false)
 
     useGSAP(() => {
         // Referencias de elementos
@@ -19,95 +18,80 @@ const Hero = () => {
 
         if (!title || !subtitle || !cta || !hero) return
 
-        // PASO 1: Reset inicial - Asegurar estado de inicio
+        // PASO 1: Reset inicial
         gsap.set([title, subtitle, cta], {
             opacity: 0,
-            y: 0,
-            scale: 1,
-            clearProps: "transform" // Limpiar transformaciones previas
+            y: 20 // Empezar un poco abajo para el "fade in"
         })
 
-        // PASO 2: Animación de entrada (sin ScrollTrigger)
+        // PASO 2: Animación de entrada
         const entryTimeline = gsap.timeline({
-            onComplete: () => {
-                setIsAnimationComplete(true)
-            }
+            onComplete: createScrollAnimation // Llama a esta función al terminar
         })
 
         entryTimeline
             .to(title, {
                 opacity: 1,
                 y: 0,
-                duration: 1,
+                duration: 0.75,
                 ease: "power3.out",
                 delay: 0.2
             })
             .to(subtitle, {
                 opacity: 1,
                 y: 0,
-                duration: 1,
+                duration: 0.75,
                 ease: "power3.out"
             }, "-=0.7")
             .to(cta, {
                 opacity: 1,
                 y: 0,
-                duration: 1,
+                duration: 0.75,
                 ease: "power3.out"
             }, "-=0.7")
 
-        // PASO 3: Animación de scroll (solo después de entrada completa)
-        const scrollTimeline = gsap.timeline({
-            scrollTrigger: {
-                trigger: hero,
-                start: "top top",
-                end: "bottom top",
-                scrub: 1,
-                onUpdate: (self) => {
-                    // Solo aplicar si la animación de entrada terminó
-                    if (!isAnimationComplete) return
+        // --- Variables para la limpieza ---
+        let scrollTimeline; // La declaramos aquí para poder acceder a ella en el cleanup
 
-                    const progress = self.progress
-
-                    // Animación basada en progreso (0-1)
-                    gsap.to(title, {
-                        y: -100 * progress,
-                        opacity: 1 - progress,
-                        scale: 1 - (0.2 * progress),
-                        duration: 0.1,
-                        overwrite: true
-                    })
-
-                    gsap.to(subtitle, {
-                        y: -80 * progress,
-                        opacity: 1 - progress,
-                        duration: 0.1,
-                        overwrite: true
-                    })
-
-                    gsap.to(cta, {
-                        y: -60 * progress,
-                        opacity: 1 - progress,
-                        duration: 0.1,
-                        overwrite: true
-                    })
+        // PASO 3: Función que CREA la animación de scroll
+        function createScrollAnimation() {
+            scrollTimeline = gsap.timeline({
+                scrollTrigger: {
+                    trigger: hero,
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: 1,
                 }
-            }
-        })
+            })
+
+            // Añade las animaciones directamente al timeline
+            // scrub: 1 se encargará de animarlas según el progreso
+            scrollTimeline
+                .to(title, {
+                    y: -100,
+                    opacity: 0,
+                    scale: 0.8,
+                }, 0) // El '0' hace que todas empiecen al mismo tiempo
+                .to(subtitle, {
+                    y: -80,
+                    opacity: 0,
+                }, 0)
+                .to(cta, {
+                    y: -60,
+                    opacity: 0,
+                }, 0)
+        }
 
         // PASO 4: Cleanup al desmontar
         return () => {
             entryTimeline.kill()
-            scrollTimeline.kill()
-
-            // Reset elementos a su estado visible
-            gsap.set([title, subtitle, cta], {
-                opacity: 1,
-                y: 0,
-                scale: 1,
-                clearProps: "all"
-            })
+            // scrollTimeline puede no existir si el componente se desmonta rápido
+            if (scrollTimeline) {
+                scrollTimeline.kill()
+            }
         }
-    }, [isAnimationComplete])
+
+    }, []) // Array de dependencias vacío
 
     return (
         <section
@@ -120,7 +104,7 @@ const Hero = () => {
                     ref={titleRef}
                     className="flex flex-col items-center mb-6"
                 >
-                    <Logo variant="nameless" className="h-90.5" />
+                    <Logo variant="nameless" className="md:h-90.5 h-57.5 " />
                     <h1
                         className="text-6xl md:text-8xl font-bold tracking-tight"
                         style={{ color: `rgb(var(--foreground))` }}
