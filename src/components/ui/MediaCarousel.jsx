@@ -90,7 +90,8 @@ const MediaCarousel = ({ images = [], video = null, productName = "Producto" }) 
                                         ref={videoRef}
                                         src={item.src}
                                         className="w-full h-full object-cover"
-                                        controls
+                                        autoPlay
+                                        muted
                                         loop
                                         playsInline
                                         preload="metadata"

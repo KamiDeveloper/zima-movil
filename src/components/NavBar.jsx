@@ -41,7 +41,7 @@ const NavBar = () => {
                     <div className="logo">
                         <NavLink to="/">
                             <div>
-                                <Logo variant="nameless" className="h-7 md:h-10 " hover={true} />
+                                <Logo variant="nameless" className="h-8 md:h-10 " hover={true} />
                             </div>
                         </NavLink>
                     </div>
