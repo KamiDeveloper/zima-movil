@@ -117,7 +117,7 @@ const Hero = () => {
                     className="text-xl md:text-2xl mb-12 max-w-2xl mx-auto leading-relaxed"
                     style={{ color: `rgb(var(--muted-foreground))` }}
                 >
-                    Queremos ser la única tienda para tí y ofrecerte la mejor experiencia, calidad y servicio.
+                    Queremos ser la única tienda para tí ofreciendote la mejor experiencia, calidad y servicio.
                 </p>
                 <div ref={ctaRef} className="flex gap-4 justify-center flex-wrap">
                     <button
