@@ -64,11 +64,11 @@ const HamburgerButton = ({ isOpen, onClick }) => {
                 style={{ backgroundColor: `rgb(var(--foreground))` }}
             />
             <span
-                className="hamburger-line-2 block w-5 h-0.5 mb-1 rounded-full"
+                className="hamburger-line-2 block w-5 h-0.5 mb-1 rounded-full opacity-0"
                 style={{ backgroundColor: `rgb(var(--foreground))` }}
             />
             <span
-                className="hamburger-line-3 block w-5 h-0.5 rounded-full"
+                className="hamburger-line-3 block w-5 h-0.5 rounded-full opacity-0"
                 style={{ backgroundColor: `rgb(var(--foreground))` }}
             />
         </button>

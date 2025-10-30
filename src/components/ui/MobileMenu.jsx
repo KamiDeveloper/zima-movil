@@ -12,7 +12,7 @@ const MobileMenu = ({ isOpen, onClose }) => {
     useEffect(() => {
         if (isOpen) {
             // Primero asegurar que todos los elementos sean visibles
-            gsap.set(itemsRef.current, { opacity: 1, x: 0 })
+            gsap.set(itemsRef.current, { opacity: 0, x: 0 })
 
             // Animación de apertura
             const tl = gsap.timeline()
