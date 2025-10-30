@@ -2,72 +2,10 @@ import ProductCard from '../components/ui/ProductCard'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { useRef } from 'react'
-
-const ALL_PRODUCTS = [
-    {
-        id: 1,
-        name: "Infinix Hot 60 Pro Plus",
-        price: 170,
-        description: "Destacado por ser el más Delgado del Mundo con Pantalla Curva AMOLED 3D, IA Avanzada y un Rendimiento Excepcional.",
-        featured: true
-    },
-    {
-        id: 2,
-        name: "Realme Buds T110",
-        price: 23,
-        description: "Auriculares Inalámbricos que Ofrecen una Batería de Larga Duración, Baja Latencia para Juegos y Resistencia a Salpicaduras."
-    },
-    {
-        id: 3,
-        name: "Redmi Buds 6 Lite",
-        price: 20,
-        description: "Compacto pero poderoso. Auriculares inalámbricos de Xiaomi que ofrecen cancelación de ruido activa (ANC) son una opción ideal para uso diario y deporte."
-    },
-    {
-        id: 4,
-        name: "Band 6",
-        price: 15,
-        description: "Reloj inteligente con funciones avanzadas."
-    },
-    {
-        id: 5,
-        name: "Buds Pro",
-        price: 39,
-        description: "Audio como pocos y con cancelación de ruido activa."
-    },
-    {
-        id: 6,
-        name: "Tablet",
-        price: 499,
-        description: "Productividad y entretenimiento en pantalla grande."
-    },
-    {
-        id: 7,
-        name: "Cover Pro",
-        price: 9,
-        description: "Protección para tu dispositivo."
-    },
-    {
-        id: 8,
-        name: "Charger Fast",
-        price: 5,
-        description: "Carga rápida "
-    },
-    {
-        id: 9,
-        name: "Zima Cable Premium",
-        price: 2.5,
-        description: "Cable de alta durabilidad y velocidad."
-    },
-    {
-        id: 10,
-        name: "Screen Protector",
-        price: 2,
-        description: "Protección de pantalla con tecnología anti-rayado."
-    }
-]
+import { useProducts } from '../context/ProductContext'
 
 const Shop = () => {
+    const { filteredProducts, categories, selectedCategory, selectCategory } = useProducts()
     const titleRef = useRef(null)
     const gridRef = useRef(null)
     const containerRef = useRef(null)
@@ -125,52 +63,31 @@ const Shop = () => {
                 </div>
 
                 <div className="mb-8 flex gap-4 flex-wrap">
-                    <button
-                        className="px-6 py-3 rounded-full font-medium transition-all duration-300"
-                        style={{
-                            backgroundColor: `rgb(var(--primary))`,
-                            color: `rgb(var(--primary-foreground))`
-                        }}
-                    >
-                        Todos
-                    </button>
-                    <button
-                        className="px-6 py-3 rounded-full font-medium transition-all duration-300"
-                        style={{
-                            backgroundColor: `rgb(var(--secondary))`,
-                            color: `rgb(var(--secondary-foreground))`,
-                            border: `1px solid rgb(var(--border))`
-                        }}
-                    >
-                        Smartphones
-                    </button>
-                    <button
-                        className="px-6 py-3 rounded-full font-medium transition-all duration-300"
-                        style={{
-                            backgroundColor: `rgb(var(--secondary))`,
-                            color: `rgb(var(--secondary-foreground))`,
-                            border: `1px solid rgb(var(--border))`
-                        }}
-                    >
-                        Wearables
-                    </button>
-                    <button
-                        className="px-6 py-3 rounded-full font-medium transition-all duration-300"
-                        style={{
-                            backgroundColor: `rgb(var(--secondary))`,
-                            color: `rgb(var(--secondary-foreground))`,
-                            border: `1px solid rgb(var(--border))`
-                        }}
-                    >
-                        Accesorios
-                    </button>
+                    {categories.map((category) => (
+                        <button
+                            key={category.id}
+                            onClick={() => selectCategory(category.id)}
+                            className="px-6 py-3 rounded-full font-medium transition-all duration-300"
+                            style={{
+                                backgroundColor: selectedCategory === category.id
+                                    ? `rgb(var(--primary))`
+                                    : `rgb(var(--secondary))`,
+                                color: selectedCategory === category.id
+                                    ? `rgb(var(--primary-foreground))`
+                                    : `rgb(var(--secondary-foreground))`,
+                                border: `1px solid rgb(var(--border))`
+                            }}
+                        >
+                            {category.name}
+                        </button>
+                    ))}
                 </div>
 
                 <div
                     ref={gridRef}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
-                    {ALL_PRODUCTS.map((product) => (
+                    {filteredProducts.map((product) => (
                         <div key={product.id} className="shop-product-card">
                             <ProductCard {...product} />
                         </div>

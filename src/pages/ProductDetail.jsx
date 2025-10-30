@@ -1,57 +1,25 @@
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, Navigate } from 'react-router-dom'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { useRef } from 'react'
 import { useCurrency } from '../context/CurrencyContext'
-
-const PRODUCTS_DATA = {
-    1: {
-        name: "Zima Pro Max",
-        price: 170,
-        description: "El dispositivo más potente de nuestra línea. Rendimiento excepcional que redefine los estándares de la industria.",
-        specs: [
-            "Procesador de última generación",
-            "12GB RAM",
-            "512GB almacenamiento",
-            "Pantalla AMOLED 6.7\"",
-            "Cámara triple 108MP",
-            "Batería 5000mAh"
-        ],
-        features: [
-            "Carga rápida 120W",
-            "Resistente al agua IP68",
-            "5G ultrarrápido",
-            "Face ID avanzado"
-        ]
-    },
-    2: {
-        name: "Zima Air",
-        price: 899,
-        description: "Ultraligero y elegante. Perfecto para el día a día sin comprometer rendimiento.",
-        specs: [
-            "Procesador eficiente",
-            "8GB RAM",
-            "256GB almacenamiento",
-            "Pantalla OLED 6.3\"",
-            "Cámara dual 64MP",
-            "Batería 4500mAh"
-        ],
-        features: [
-            "Diseño premium",
-            "Carga inalámbrica",
-            "Ultra delgado 7mm"
-        ]
-    }
-}
+import { useProducts } from '../context/ProductContext'
+import MediaCarousel from '../components/ui/MediaCarousel'
 
 const ProductDetail = () => {
     const { id } = useParams()
-    const product = PRODUCTS_DATA[id] || PRODUCTS_DATA[1]
+    const { getProduct } = useProducts()
+    const product = getProduct(id)
     const { formatPrice } = useCurrency()
 
     const imageRef = useRef(null)
     const contentRef = useRef(null)
     const specsRef = useRef(null)
+
+    // Si el producto no existe, redirigir a la tienda
+    if (!product) {
+        return <Navigate to="/tienda" replace />
+    }
 
     useGSAP(() => {
         const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
@@ -91,17 +59,12 @@ const ProductDetail = () => {
                 </Link>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-16">
-                    <div
-                        ref={imageRef}
-                        className="aspect-square rounded-3xl flex items-center justify-center overflow-hidden"
-                        style={{ backgroundColor: `rgb(var(--muted))` }}
-                    >
-                        <span
-                            className="text-6xl font-bold"
-                            style={{ color: `rgb(var(--muted-foreground))` }}
-                        >
-                            {product.name}
-                        </span>
+                    <div ref={imageRef}>
+                        <MediaCarousel
+                            images={product.gallery}
+                            video={product.video}
+                            productName={product.name}
+                        />
                     </div>
 
                     <div ref={contentRef} className="flex flex-col justify-center">

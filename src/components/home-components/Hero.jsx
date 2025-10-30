@@ -1,6 +1,6 @@
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import Logo from "../ui/Logo"
 
 const Hero = () => {
@@ -8,60 +8,106 @@ const Hero = () => {
     const titleRef = useRef(null)
     const subtitleRef = useRef(null)
     const ctaRef = useRef(null)
+    const [isAnimationComplete, setIsAnimationComplete] = useState(false)
 
     useGSAP(() => {
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: heroRef.current,
-                start: "top top",
-                end: "bottom top",
-                scrub: 1,
-                pin: false
+        // Referencias de elementos
+        const title = titleRef.current
+        const subtitle = subtitleRef.current
+        const cta = ctaRef.current
+        const hero = heroRef.current
+
+        if (!title || !subtitle || !cta || !hero) return
+
+        // PASO 1: Reset inicial - Asegurar estado de inicio
+        gsap.set([title, subtitle, cta], {
+            opacity: 0,
+            y: 0,
+            scale: 1,
+            clearProps: "transform" // Limpiar transformaciones previas
+        })
+
+        // PASO 2: Animación de entrada (sin ScrollTrigger)
+        const entryTimeline = gsap.timeline({
+            onComplete: () => {
+                setIsAnimationComplete(true)
             }
         })
 
-        tl.to(titleRef.current, {
-            y: -100,
-            opacity: 0,
-            scale: 0.8,
-            ease: "power2.out"
-        })
-            .to(subtitleRef.current, {
-                y: -80,
-                opacity: 0,
-                ease: "power2.out"
-            }, "<")
-            .to(ctaRef.current, {
-                y: -60,
-                opacity: 0,
-                ease: "power2.out"
-            }, "<")
+        entryTimeline
+            .to(title, {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power3.out",
+                delay: 0.2
+            })
+            .to(subtitle, {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power3.out"
+            }, "-=0.7")
+            .to(cta, {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power3.out"
+            }, "-=0.7")
 
-        gsap.from(titleRef.current, {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-            ease: "power3.out",
-            delay: 0.2
+        // PASO 3: Animación de scroll (solo después de entrada completa)
+        const scrollTimeline = gsap.timeline({
+            scrollTrigger: {
+                trigger: hero,
+                start: "top top",
+                end: "bottom top",
+                scrub: 1,
+                onUpdate: (self) => {
+                    // Solo aplicar si la animación de entrada terminó
+                    if (!isAnimationComplete) return
+
+                    const progress = self.progress
+
+                    // Animación basada en progreso (0-1)
+                    gsap.to(title, {
+                        y: -100 * progress,
+                        opacity: 1 - progress,
+                        scale: 1 - (0.2 * progress),
+                        duration: 0.1,
+                        overwrite: true
+                    })
+
+                    gsap.to(subtitle, {
+                        y: -80 * progress,
+                        opacity: 1 - progress,
+                        duration: 0.1,
+                        overwrite: true
+                    })
+
+                    gsap.to(cta, {
+                        y: -60 * progress,
+                        opacity: 1 - progress,
+                        duration: 0.1,
+                        overwrite: true
+                    })
+                }
+            }
         })
 
-        gsap.from(subtitleRef.current, {
-            opacity: 0,
-            y: 30,
-            duration: 1,
-            ease: "power3.out",
-            delay: 0.5
-        })
+        // PASO 4: Cleanup al desmontar
+        return () => {
+            entryTimeline.kill()
+            scrollTimeline.kill()
 
-        gsap.from(ctaRef.current, {
-            opacity: 0,
-            y: 20,
-            duration: 1,
-            ease: "power3.out",
-            delay: 0.8
-        })
-
-    }, [])
+            // Reset elementos a su estado visible
+            gsap.set([title, subtitle, cta], {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                clearProps: "all"
+            })
+        }
+    }, [isAnimationComplete])
 
     return (
         <section

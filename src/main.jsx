@@ -3,6 +3,7 @@ import './index.css'
 import App from './App.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
 import { CurrencyProvider } from './context/CurrencyContext.jsx'
+import { ProductProvider } from './context/ProductContext.jsx'
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -13,7 +14,9 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 createRoot(document.getElementById('root')).render(
   <ThemeProvider>
     <CurrencyProvider>
-      <App />
+      <ProductProvider>
+        <App />
+      </ProductProvider>
     </CurrencyProvider>
   </ThemeProvider>
 )

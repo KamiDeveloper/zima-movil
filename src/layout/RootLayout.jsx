@@ -1,9 +1,13 @@
 import { NavBar } from '../components/NavBar'
-import { Outlet } from 'react-router-dom'
-import { useEffect } from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
 
 const RootLayout = () => {
+    const location = useLocation()
+    const lenisRef = useRef(null)
+
+    // Inicializar Lenis
     useEffect(() => {
         const lenis = new Lenis({
             duration: 1.2,
@@ -14,6 +18,8 @@ const RootLayout = () => {
             smoothTouch: false,
             touchMultiplier: 2,
         })
+
+        lenisRef.current = lenis
 
         function raf(time) {
             lenis.raf(time)
@@ -26,6 +32,17 @@ const RootLayout = () => {
             lenis.destroy()
         }
     }, [])
+
+    // Scroll to top al cambiar de página
+    useEffect(() => {
+        if (lenisRef.current) {
+            lenisRef.current.scrollTo(0, {
+                immediate: true, // Scroll instantáneo al cambiar página
+                force: true,
+                lock: true
+            })
+        }
+    }, [location.pathname])
 
     return (
         <div>
